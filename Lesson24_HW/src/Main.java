@@ -23,17 +23,20 @@ public class Main {
                 System.out.println("\nСпасибо, что воспользовались нашим телефонным справочником." +
                         "\n\t\t\t\tДо свидания!");
                 return;
-            } else if (input.equalsIgnoreCase("list")) {
+            }
+            if (input.equalsIgnoreCase("list")) {
                 printAll();
-            } else if (input.matches(NAME)) {
+                continue;
+            }
+            if (input.matches(NAME)) {
                 nameCheck(input);
+                continue;
+            }
+            String number = numberCheck(input);
+            if (number.equals("wrong")) {
+                System.out.println("Неверный ввод!");
             } else {
-                String number = numberCheck(input);
-                if (number.equals("wrong")) {
-                    wrongInput();
-                } else {
-                    addNumber(number);
-                }
+                addNumber(number);
             }
         }
     }
@@ -42,9 +45,8 @@ public class Main {
         number = number.replaceAll("\\D+", "").trim();
         if (number.length() == 11 && (number.charAt(0) == '7' || number.charAt(0) == '8')) {
             return number.replaceAll(NUMBER, "+7($2)$3-$4-$5");
-        } else {
-            return "wrong";
         }
+        return "wrong";
     }
 
 
@@ -61,8 +63,7 @@ public class Main {
                 }
                 String number2 = numberCheck(number);
                 if (number2.equals("wrong")) {
-                    wrongInput();
-                    System.out.println("Введите номер ещё раз:");
+                    System.out.println("Неверный ввод! Введите номер ещё раз:");
                 } else if (phoneBook.containsValue(number2)) {
                     System.out.println("Такой номер уже есть в справочнике" +
                             "\nВведите другой номер:");
@@ -76,8 +77,14 @@ public class Main {
 
     public static void add(String name, String number) {
         if (phoneBook.containsKey(name)) {
-            phoneBook.put(name, number);
-            System.out.println("Имя " + name + " eсть в справочнике. Старый номер изменён на новый " + number);
+            System.out.println("Имя " + name + " eсть в справочнике. Изменить старый номер на новый? 1-да 2-нет");
+            String yes = new Scanner(System.in).next();
+            if (yes.equals("1")) {
+                phoneBook.put(name, number);
+                System.out.println("На имя " + name + " записан новый номер " + number);
+                return;
+            }
+            System.out.println("На имя " + name + " оставлен старый номер");
             return;
         }
         phoneBook.put(name, number);
@@ -111,13 +118,10 @@ public class Main {
     public static void printAll() {
         if (phoneBook.isEmpty()) {
             System.out.println("Список пуст!");
+            return;
         }
         for (Map.Entry<String, String> entry : phoneBook.entrySet()) {
             System.out.println("\t" + entry.getKey() + " - " + entry.getValue());
         }
-    }
-
-    public static void wrongInput() {
-        System.out.println("Неверный ввод!");
     }
 }
